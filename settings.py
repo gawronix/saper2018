@@ -19,6 +19,8 @@ LABEL_FILE_1 = 'tf/tf_files_2/retrained_labels.txt'
 
 ROBOT_IMG_PATH = 'images/robot.png'
 BOMB_IMG_PATH = 'images/bomba.png'
+TREE_IMG_PATH = 'images/tree.png'
+ROCK_IMG_PATH = 'images/rock.png'
 
 
 DATA_PATH = 'data/data.txt'

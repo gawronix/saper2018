@@ -50,6 +50,10 @@ class AStar:
             special_x = 40
         elif field_b.is_mud:
             special_x = 20
+        elif field_b.has_tree:
+            special_x = 80
+        elif field_b.has_rock:
+            special_x = 100
         else:
             special_x = 10
 

@@ -22,6 +22,8 @@ class Grid:
                 is_mud = self.is_special_field(not is_wall_field)
                 is_water = self.is_special_field(not is_wall_field) if not is_mud else False
                 is_bomb = self.is_bomb_field(not is_wall_field, not is_water)
+                is_tree = self.is_special_field(not is_wall_field)
+                is_rock = self.is_special_field(not is_wall_field)
                 field_params = self.generate_params(params_data, is_bomb)
                 photo = self.get_photo(bomb_list if is_bomb else other_image_list)
                 field = Field(x, y, field_params, field_size, not is_wall_field, is_bomb, is_mud, is_water, photo)

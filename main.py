@@ -5,6 +5,7 @@ from grid import Grid
 from a_star import AStar
 from is_bomb_matcher import IsBombMatcher
 import settings
+import uczenie_bomb as ub
 
 
 def parse_data(file_name):
@@ -28,6 +29,12 @@ robot_img = pygame.transform.scale(robot_img, (settings.ROBOT_SIZE, settings.ROB
 bomba_img = pygame.image.load(settings.BOMB_IMG_PATH)
 bomba_img = pygame.transform.scale(bomba_img, (settings.ROBOT_SIZE, settings.ROBOT_SIZE))
 
+tree_img = pygame.image.load(settings.TREE_IMG_PATH)
+tree_img = pygame.transform.scale(tree_img, (settings.ROBOT_SIZE, settings.ROBOT_SIZE))
+
+rock_img = pygame.image.load(settings.ROCK_IMG_PATH)
+rock_img = pygame.transform.scale(rock_img, (settings.ROBOT_SIZE, settings.ROBOT_SIZE))
+
 field_params = parse_data(settings.DATA_PATH)
 
 map_obj = Grid(settings.HOW_MANY_FIELDS, settings.FIELD_SIZE, field_params)
@@ -40,6 +47,12 @@ def read_photo(field, model_file, label_file):
     results = is_b.get_result(field.photo, model_file, label_file)
     return results
 
+
+def guessing(file_name):
+    # wczytanie obrazu do sieci
+    guess = ub.cnn(file_name)
+    return guess
+        
 
 def move_robot(field):
     gameDisplay.blit(robot_img, (field.map_x, field.map_y))
@@ -56,22 +69,29 @@ def scan_for_bombs():
             if is_bomb_here(x):
                 print('Bomb position {}'.format(x.get_position()))
                 bomb_fields.insert(len(bomb_fields), x)
-    print('Ilość bomb: {}'.format(len(bomb_fields)))
+    print('Ilosc bomb: {}'.format(len(bomb_fields)))
     return bomb_fields
 
 
 def is_bomb_here(field):
     # sprawdzenie czy tu jest bomba
+    check_thing(field)
     results = read_photo(field, settings.MODEL_FILE, settings.LABEL_FILE)
     first_result = results[1]
     return first_result.result_name == "bomb" and first_result.result_percent*100 > 75
 
+def check_thing(file_name):
+    if guessing(file_name) == 'bomb':
+        print('Bomb position {}'.format(x.get_position()))
+        bomb_fields.insert(len(bomb_fields), x)
+    else:
+        print('Object position {}'.format(x.get_position()))
 
 fields_with_bombs = scan_for_bombs()
 
 
 def game_loop(start_point, fields_with_bombs):
-    # główna pętla
+    # glowna petla
     a = AStar()
     current_field = start_point
     field_to_move = fields_with_bombs[0]
@@ -88,6 +108,10 @@ def game_loop(start_point, fields_with_bombs):
                 gameDisplay.fill(x.color, (x.map_x, x.map_y, settings.FIELD_SIZE, settings.FIELD_SIZE))
                 if x.has_bomb:
                     gameDisplay.blit(bomba_img, (x.map_x, x.map_y))
+                elif x.has_tree:
+                    gameDisplay.blit(tree_img, (x.map_x, x.map_y))
+                elif x.has_rock:
+                    gameDisplay.blit(rock_img, (x.map_x, x.map_y))
 
         if len(path) > 0:
             current_field = path[0]
